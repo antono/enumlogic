@@ -31,50 +31,47 @@ module Enumlogic
       values
     end
 
+    denominator = options[:denominator] || 100_000 # change if you want to have smaller ints
+
     values_array = values.is_a?(Hash) ? values.keys : values
-    values_int_hash  = {} 
-    values_array.each { |value| values_int_hash[Zlib.crc32(value)] = value }
+    values_int_hash  = {}
+    values_array.each { |value| values_int_hash[Zlib.crc32(value) / denominator] = value }
 
     constant_name = options[:constant] || field.to_s.pluralize.upcase
     const_set constant_name, values_array unless const_defined?(constant_name)
 
-    new_hash = {}
-    values_hash.each { |key, text| new_hash[text] = key }
-    (class << self; self; end).send(:define_method, "#{field}_options") { new_hash }
+    (class << self; self; end).send(:define_method, "#{field}_options") { values_hash.invert }
 
     define_method("#{field}_key") do
       value = send(field)
       return nil if value.nil?
+      value = values_int_hash[value]
       value.to_s.gsub(/[-\s]/, '_').downcase.to_sym
     end
 
     define_method("#{field}_text") do
       value = send(field)
       return nil if value.nil?
-      values_hash[value]
+      values_hash[values_int_hash[value]]
     end
 
     define_method("#{field}_int") do
-      self[field]
+      read_attribute(field)
     end
 
     define_method("#{field}=") do |val|
-      write_attribute(field, Zlib.crc32(val.to_s))
-    end
-
-    define_method("#{field}") do 
-      values_int_hash[self[field]]
+      write_attribute(field, Zlib.crc32(val) / denominator)
     end
 
     values_array.each do |value|
       method_name = value.downcase.gsub(/[-\s]/, '_')
       method_name = "#{method_name}_#{field}" if options[:namespace]
       define_method("#{method_name}?") do
-        self.send(field) == value
+        self.send("#{field}_key") == value.to_sym
       end
     end
 
-    validates_inclusion_of field, :in => values_array, :message => options[:message], :allow_nil => options[:allow_nil]
+    validates_inclusion_of field, :in => values_int_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil]
   end
 
   def enum?(name)

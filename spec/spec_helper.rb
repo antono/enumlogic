@@ -12,11 +12,11 @@ ActiveRecord::Base.configurations = true
 ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define(:version => 1) do
   create_table :computers do |t|
-    t.string :kind
+    t.integer :kind
   end
 
   create_table :cars do |t|
-    t.integer :kind
+    t.integer :model
   end
 end
 

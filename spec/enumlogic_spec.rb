@@ -35,7 +35,7 @@ describe "Enumlogic" do
   it "should create int methods" do
     Computer.enum :kind, ["apple", "dell", "hp", "lenovo"]
     c = Computer.new(:kind => "lenovo")
-    c.kind_int.should == Zlib.crc32('lenovo')
+    c.kind_int.should == Zlib.crc32('lenovo') / 100_000
   end
 
   it "should create key methods for hashes" do
@@ -100,9 +100,11 @@ describe "Enumlogic" do
   end
 
   it "should save integer to db" do
-    Car.enum :kind, ['tesla', 'bmw', 'moskvich']
-    Car.new(:kind => 'tesla').save
-    Car.connection.execute("select * from cars").first['kind'].to_i.should == Zlib.crc32('tesla')
-    Car.first.kind.should == 'tesla'
+    Car.enum :model, ['tesla', 'bmw', 'moskvich']
+    Car.new(:model => 'tesla').save.should be_true
+    Car.connection.execute("select * from cars").first['model'].to_i.should == Zlib.crc32('tesla') / 100_000
+    Car.first.model_key.should  == :tesla
+    Car.first.model_text.should == 'tesla'
+    Car.first.model_int.should  == Zlib.crc32('tesla') / 100_000
   end
 end
