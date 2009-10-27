@@ -1,6 +1,24 @@
 = enumlogic
 
-Description goes here.
+Allows you to easily specify enumerations for your models. Specify enumerations like:
+
+    class Computer < ActiveRecord::Base
+      enum :kind, ["apple", "dell", "hp"]
+      enum :kind, {"apple" => "Apple", "dell" => "Dell", "hp" => "HP"}
+    end
+
+You can now do the following:
+
+    Computer::KINDS         # passes back the defined enum keys as array
+    Computer.kind_options   # gives you a friendly hash that you can easily pass into the select helper for forms
+    Computer.new(:kind => "unknown").valid? # false, automatically validates inclusion of the enum field
+
+    c = Computer.new(:kind => "apple")
+    c.apple?        # true
+    c.kind_key      # :apple
+    c.kind_int      # Zlib.crc32(:apple.to_s)
+    c.kind_text     # "apple" or "Apple" if you gave a hash with a user friendly text value
+    c.enum?(:kind)  # true
 
 == Note on Patches/Pull Requests
  

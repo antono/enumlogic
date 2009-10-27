@@ -14,14 +14,20 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table :computers do |t|
     t.string :kind
   end
+
+  create_table :cars do |t|
+    t.integer :kind
+  end
 end
 
 Spec::Runner.configure do |config|
   config.before(:each) do
     class Computer < ActiveRecord::Base
     end
+    class Car < ActiveRecord::Base
+    end
   end
-  
+
   config.after(:each) do
     Object.send(:remove_const, :Computer)
   end
