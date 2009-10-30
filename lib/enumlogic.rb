@@ -33,7 +33,7 @@ module Enumlogic
 
     values_array = values.is_a?(Hash) ? values.keys : values
     values_int_hash  = {} 
-    values_array.each { |value| values_int_hash[Zlib.crc32(value)] = value }
+    values_array.each { |value| values_int_hash[Zlib.crc32(value.to_s)] = value }
 
     constant_name = options[:constant] || field.to_s.pluralize.upcase
     const_set constant_name, values_array unless const_defined?(constant_name)
@@ -67,7 +67,7 @@ module Enumlogic
     end
 
     values_array.each do |value|
-      method_name = value.downcase.gsub(/[-\s]/, '_')
+      method_name = value.to_s.downcase.gsub(/[-\s]/, '_')
       method_name = "#{method_name}_#{field}" if options[:namespace]
       define_method("#{method_name}?") do
         self.send(field) == value
