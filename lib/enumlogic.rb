@@ -62,7 +62,7 @@ module Enumlogic
     end
 
     define_method("#{field}=") do |val|
-      write_attribute(field, Zlib.crc32(val.to_s) / denominator)
+      write_attribute(field, Zlib.crc32(val.to_s) / denominator) unless val.blank?
     end
 
     values_array.each do |value|
@@ -73,7 +73,7 @@ module Enumlogic
       end
     end
 
-    validates_inclusion_of field, :in => values_int_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil]
+    validates_inclusion_of field, :in => values_int_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil], :allow_blank => options[:allow_blank]
   end
 
   def enum?(name)

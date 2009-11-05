@@ -112,6 +112,13 @@ describe "Enumlogic" do
     c.should be_valid
   end
 
+  it 'should allow blank during validations' do
+    Computer.enum :kind, ["apple", "dell"], :allow_blank => true
+    c = Computer.new(:kind => "")
+    c.should be_valid
+    c.kind.should == nil
+  end
+
   it "should find a defined enum" do
     Computer.enum :kind, ["apple", "dell", "hp"]
 
