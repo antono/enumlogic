@@ -43,14 +43,14 @@ module Enumlogic
     (class << self; self; end).send(:define_method, "#{field}_options") { values_hash.invert }
 
     define_method("#{field}_key") do
-      value = send(field)
+      value = read_attribute(field)
       return nil if value.nil?
       value = values_int_hash[value]
       value.to_s.gsub(/[-\s]/, '_').downcase.to_sym
     end
 
     define_method("#{field}_text") do
-      value = send(field)
+      value = read_attribute(field)
       return nil if value.nil?
       values_hash[values_int_hash[value]]
     end
@@ -60,7 +60,11 @@ module Enumlogic
     end
 
     define_method("#{field}=") do |val|
-      write_attribute(field, Zlib.crc32(val) / denominator)
+      write_attribute(field, Zlib.crc32(val.to_s) / denominator)
+    end
+
+    define_method(field) do
+      values_int_hash[read_attribute(field)]
     end
 
     values_array.each do |value|
@@ -71,7 +75,7 @@ module Enumlogic
       end
     end
 
-    validates_inclusion_of field, :in => values_int_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil]
+    validates_inclusion_of field, :in => values_array, :message => options[:message], :allow_nil => options[:allow_nil]
   end
 
   def enum?(name)

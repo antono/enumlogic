@@ -68,10 +68,16 @@ describe "Enumlogic" do
     c.should be_apple
   end
 
-  it "should namespace boolean methods" do
+  it "should create namespace boolean methods" do
     Computer.enum :kind, ["apple", "dell", "hp"], :namespace => true
     c = Computer.new(:kind => "apple")
     c.should be_apple_kind
+  end
+
+  it "should create reader methods" do
+    Computer.enum :kind, ["apple", "dell", "hp"]
+    c = Computer.new(:kind => "apple")
+    c.kind.should == "apple"
   end
 
   it "should validate inclusion" do
