@@ -45,14 +45,14 @@ module Enumlogic
     (class << self; self; end).send(:define_method, "#{field}_options") { new_hash }
 
     define_method("#{field}_key") do
-      value = send(field)
+      value = read_attribute(field)
       return nil if value.nil?
       value = values_int_hash[value]
       value.to_s.gsub(/[-\s]/, '_').downcase.to_sym
     end
 
     define_method("#{field}_text") do
-      value = send(field)
+      value = read_attribute(field)
       return nil if value.nil?
       values_hash[values_int_hash[value]]
     end
@@ -65,6 +65,10 @@ module Enumlogic
       write_attribute(field, Zlib.crc32(val.to_s) / denominator) unless val.blank?
     end
 
+    define_method(field) do
+      values_int_hash[read_attribute(field)]
+    end
+
     values_array.each do |value|
       method_name = value.to_s.downcase.gsub(/[-\s]/, '_')
       method_name = "#{method_name}_#{field}" if options[:namespace]
@@ -73,7 +77,7 @@ module Enumlogic
       end
     end
 
-    validates_inclusion_of field, :in => values_int_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil], :allow_blank => options[:allow_blank]
+    validates_inclusion_of field, :in => values_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil], :allow_blank => options[:allow_blank]
   end
 
   def enum?(name)

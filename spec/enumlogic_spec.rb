@@ -98,6 +98,12 @@ describe "Enumlogic" do
     d.should be_dell_kind
   end
 
+  it "should create reader methods" do
+    Computer.enum :kind, ["apple", "dell", "hp"]
+    c = Computer.new(:kind => "apple")
+    c.kind.should == "apple"
+  end
+
   it "should validate inclusion" do
     Computer.enum :kind, ["apple", "dell", "hp"]
     c = Computer.new
@@ -131,7 +137,7 @@ describe "Enumlogic" do
   end
 
   it "should save integer to db" do
-    Car.enum :model, ['tesla', 'bmw', 'moskvich']
+    Car.enum :model, ['tesla', :bmw, 'moskvich']
     Car.new(:model => 'tesla').save.should be_true
     Car.connection.execute("select * from cars").first['model'].to_i.should == Zlib.crc32('tesla') / 100_000
     Car.first.model_key.should  == :tesla
