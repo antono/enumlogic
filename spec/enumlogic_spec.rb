@@ -1,6 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Enumlogic" do
+
   it "should have a constant" do
     Computer.enum :kind, ["apple", "dell", "hp"], :namespace => true
     Computer::KINDS.should == ["apple", "dell", "hp"]
@@ -143,5 +144,11 @@ describe "Enumlogic" do
     Car.first.model_key.should  == :tesla
     Car.first.model_text.should == 'tesla'
     Car.first.model_int.should  == Zlib.crc32('tesla') / 100_000
+  end
+
+  it 'should convert enum value to integer Klass.kind_value(val)' do
+    Car.enum :model, ['tesla', :bmw, 'moskvich']
+    Car.model_value('tesla').should == Zlib.crc32('tesla') / 100_000
+    Car.model_value(:tesla).should == Zlib.crc32('tesla') / 100_000
   end
 end

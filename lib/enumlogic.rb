@@ -43,6 +43,7 @@ module Enumlogic
     new_hash = {}
     values_hash.each { |key, text| new_hash[text.to_s] = key }
     (class << self; self; end).send(:define_method, "#{field}_options") { new_hash }
+    (class << self; self; end).send(:define_method, "#{field}_value")   { |arg| Zlib.crc32(arg.to_s) / denominator }
 
     define_method("#{field}_key") do
       value = read_attribute(field)
