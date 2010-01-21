@@ -1,5 +1,6 @@
 require 'activerecord'
 require 'zlib'
+require 'pp'
 
 # See the enum class level method for more info.
 module Enumlogic
@@ -22,7 +23,9 @@ module Enumlogic
   #   c.kind_int      # Zlib.crc32(:apple.to_s)
   #   c.kind_text     # "apple" or "Apple" if you gave a hash with a user friendly text value
   #   c.enum?(:kind)  # true
+  #
   def enum(field, values, options = {})
+
     values_hash = if values.is_a?(Array)
       hash = {}
       values.each { |value| hash[value] = value.to_s }
@@ -42,19 +45,20 @@ module Enumlogic
 
     new_hash = {}
     values_hash.each { |key, text| new_hash[text.to_s] = key }
+
     (class << self; self; end).send(:define_method, "#{field}_options") { new_hash }
     (class << self; self; end).send(:define_method, "#{field}_value")   { |arg| Zlib.crc32(arg.to_s) / denominator }
 
     define_method("#{field}_key") do
       value = read_attribute(field)
-      return nil if value.nil?
+      return nil if value.nil? || value.blank?
       value = values_int_hash[value]
       value.to_s.gsub(/[-\s]/, '_').downcase.to_sym
     end
 
     define_method("#{field}_text") do
       value = read_attribute(field)
-      return nil if value.nil?
+      return nil if value.nil? || value.blank?
       values_hash[values_int_hash[value]]
     end
 
@@ -79,6 +83,7 @@ module Enumlogic
     end
 
     validates_inclusion_of field, :in => values_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil], :allow_blank => options[:allow_blank]
+
   end
 
   def enum?(name)
