@@ -53,7 +53,7 @@ module Enumlogic
       value = read_attribute(field)
       return nil if value.nil? || value.blank?
       value = values_int_hash[value]
-      value.to_s.gsub(/[-\s]/, '_').downcase.to_sym
+      value.to_s.downcase.to_sym
     end
 
     define_method("#{field}_text") do
