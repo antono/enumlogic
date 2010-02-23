@@ -51,14 +51,14 @@ module Enumlogic
 
     define_method("#{field}_key") do
       value = read_attribute(field)
-      return nil if value.nil? || value.blank?
+      return false if value.blank?
       value = values_int_hash[value]
       value.to_s.downcase.to_sym
     end
 
     define_method("#{field}_text") do
       value = read_attribute(field)
-      return nil if value.nil? || value.blank?
+      return false if value.blank?
       values_hash[values_int_hash[value]]
     end
 
@@ -82,7 +82,13 @@ module Enumlogic
       end
     end
 
-    validates_inclusion_of field, :in => values_hash.keys, :message => options[:message], :allow_nil => options[:allow_nil], :allow_blank => options[:allow_blank]
+    validation_options = { :in => values_hash.keys, :message => options[:message] }
+
+    [:allow_nil, :allow_blank].each do |constraint|
+      validation_options.merge!(constraint => options[constraint]) if options[constraint]
+    end
+
+    validates_inclusion_of field, validation_options
 
   end
 

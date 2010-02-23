@@ -151,4 +151,16 @@ describe "Enumlogic" do
     Car.model_value('tesla').should == Zlib.crc32('tesla') / 100_000
     Car.model_value(:tesla).should == Zlib.crc32('tesla') / 100_000
   end
+
+  describe 'enum value validations' do
+    it "should accept :allow_nil parameter for enum values validation" do
+      Car.enum :model, ['tesla', :bmw, 'moskvich'], :allow_nil => true
+      car = Car.new(:model => nil)
+      car.save.should be_true
+      car.tesla?.should_not raise_error(ArgumentError)
+      car.should_not be_tesla
+      car.should_not be_bmw
+      car.should_not be_moskvich
+    end
+  end
 end
