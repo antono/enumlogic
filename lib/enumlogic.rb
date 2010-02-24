@@ -90,3 +90,5 @@ module Enumlogic
   end
 
 end
+
+ActiveRecord::Base.extend(Enumlogic)
