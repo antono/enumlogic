@@ -1,4 +1,4 @@
-require 'activerecord'
+require 'active_record'
 require 'zlib'
 require 'pp'
 
