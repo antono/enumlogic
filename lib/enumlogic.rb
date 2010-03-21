@@ -1,6 +1,5 @@
-require 'activerecord'
+require 'active_record'
 require 'zlib'
-require 'pp'
 
 # See the enum class level method for more info.
 module Enumlogic
@@ -97,3 +96,5 @@ module Enumlogic
   end
 
 end
+
+ActiveRecord::Base.extend(Enumlogic)

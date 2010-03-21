@@ -9,25 +9,25 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["binarylogic"]
-  s.date = %q{2009-09-01}
+  s.date = %q{2010-02-24}
   s.description = %q{Adds enumerations to your models}
   s.email = %q{bjohnson@binarylogic.com}
   s.extra_rdoc_files = [
+    "CHANGELOG.rdoc",
     "LICENSE",
-     "README.rdoc"
+    "README.rdoc"
   ]
   s.files = [
-    ".document",
-     ".gitignore",
-     "CHANGELOG.rdoc",
-     "LICENSE",
-     "README.rdoc",
-     "Rakefile",
-     "VERSION.yml",
-     "enumlogic.gemspec",
-     "lib/enumlogic.rb",
-     "spec/enumlogic_spec.rb",
-     "spec/spec_helper.rb"
+    "CHANGELOG.rdoc",
+    "LICENSE",
+    "README.rdoc",
+    "Rakefile",
+    "VERSION.yml",
+    "init.rb",
+    "rails/init.rb",
+    "lib/enumlogic.rb",
+    "spec/enumlogic_spec.rb",
+    "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/binarylogic/enumlogic}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Adds enumerations to your models}
   s.test_files = [
     "spec/enumlogic_spec.rb",
-     "spec/spec_helper.rb"
+    "spec/spec_helper.rb"
   ]
 
   if s.respond_to? :specification_version then

@@ -22,13 +22,14 @@ end
 
 Spec::Runner.configure do |config|
   config.before(:each) do
-    class Computer < ActiveRecord::Base
+    class ::Computer < ActiveRecord::Base
     end
-    class Car < ActiveRecord::Base
+    class ::Car < ActiveRecord::Base
     end
   end
 
   config.after(:each) do
     Object.send(:remove_const, :Computer)
+    Object.send(:remove_const, :Car)
   end
 end
