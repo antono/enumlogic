@@ -25,6 +25,17 @@ module Enumlogic
   #
   def enum(field, values, options = {})
 
+    denominator = options[:denominator] || 100_000 # change if you want to have smaller ints
+
+    metaclass = (class << self; self; end)
+    metaclass.send(:define_method, "enum_int_for") do |arg|
+      Zlib.crc32(arg.to_s) / denominator
+    end
+    metaclass.send(:define_method, "#{field}_value") do |arg|
+      ActiveSupport::Deprecation.warn("#{field}_value(value) is deprecated. Use enum_int_for(value)")
+      enum_int_for(arg)
+    end
+
     values_hash = if values.is_a?(Array)
       hash = {}
       values.each { |value| hash[value] = value.to_s }
@@ -33,11 +44,9 @@ module Enumlogic
       values
     end
 
-    denominator = options[:denominator] || 100_000 # change if you want to have smaller ints
-
     values_array = values.is_a?(Hash) ? values.keys : values
     values_int_hash  = {}
-    values_array.each { |value| values_int_hash[Zlib.crc32(value.to_s) / denominator] = value }
+    values_array.each { |value| values_int_hash[enum_int_for(value)] = value }
 
     constant_name = options[:constant] || field.to_s.pluralize.upcase
     const_set constant_name, values_array unless const_defined?(constant_name)
@@ -45,8 +54,7 @@ module Enumlogic
     new_hash = {}
     values_hash.each { |key, text| new_hash[text.to_s] = key }
 
-    (class << self; self; end).send(:define_method, "#{field}_options") { new_hash }
-    (class << self; self; end).send(:define_method, "#{field}_value")   { |arg| Zlib.crc32(arg.to_s) / denominator }
+    metaclass.send(:define_method, "#{field}_options") { new_hash }
 
     define_method("#{field}_key") do
       value = read_attribute(field)
@@ -66,7 +74,7 @@ module Enumlogic
     end
 
     define_method("#{field}=") do |val|
-      write_attribute(field, Zlib.crc32(val.to_s) / denominator) unless val.blank?
+      write_attribute(field, self.class.enum_int_for(val)) unless val.blank?
     end
 
     define_method(field) do

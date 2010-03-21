@@ -7,33 +7,38 @@ Allows you to easily specify enumerations for your models. Specify enumerations 
     end
 
     class Computer < ActiveRecord::Base
+      # Enum as array
       enum :kind, ["apple", "dell", "hp"]
     end
 
-    class Computer < ActiveRecord::Base
-      enum :kind, {"apple" => "Apple", "dell" => "Dell", "hp" => "HP"}
+    class Car < ActiveRecord::Base
+      # Enum as hash
+      enum :kind, {"tesla" => "Tesla Motors", "bmw" => "BMW", "moskvich" => "Moskvich"}
     end
-
-    class Computer < ActiveRecord::Base
-      enum :kind, {"apple" => "Apple", "dell" => "Dell", "hp" => "HP"}, :denominator => 1_000_000
-    end
-
-All enums are translated to numbers with Zlib.crc(31). This numbers are big and if you want smaller
-numbers you can pass :denominator option. Default denominator is 100_000.
 
 You can now do the following:
 
-    Computer::KINDS         # passes back the defined enum keys as array. Constant name can be specified with
-                            # :constant option
-    Computer.kind_options   # gives you a friendly hash that you can easily pass into the select helper for forms
-    Computer.new(:kind => "unknown").valid? # false, automatically validates inclusion of the enum field
+    Computer::KINDS         # => [:apple, :dell, :hp]
+                            # Constant name can be specified with :constant option
 
-    c = Computer.new(:kind => "apple")
-    c.apple?        # true
-    c.kind_key      # :apple
-    c.kind_int      # Zlib.crc32(:apple.to_s) / denominator
-    c.kind_text     # "apple" or "Apple" if you gave a hash with a user friendly text value
-    c.enum?(:kind)  # true
+    Computer.kind_options   # gives you a friendly hash that you can easily pass into the select helper for forms
+
+    Computer.new(:kind => "unknown").valid?
+                            # => false
+                            # automatically validates inclusion of the enum field
+
+    c = Car.new(:kind => "tesla")
+
+    Car.enum_int_for('tesla') # => 16736
+    Car.enum_int_for(:tesla)  # => 16736
+
+    c.tesla?        # => true
+    c.kind_key      # => :tesla
+    c.kind_int      # => Car.enum_int_for('tesla') => 16736
+    c.kind_text     # => 'Tesla Motors'
+    c.enum?(:kind)  # => true
+
+All enum values are translated to numbers with Zlib.crc32() before save.
 
 == Note on Patches/Pull Requests
 

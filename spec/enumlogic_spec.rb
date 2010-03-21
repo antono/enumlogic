@@ -146,10 +146,14 @@ describe "Enumlogic" do
     Car.first.model_int.should  == Zlib.crc32('tesla') / 100_000
   end
 
-  it 'should convert enum value to integer Klass.kind_value(val)' do
+  it 'should convert enum value to integer Klass.enum_int_for(val)' do
     Car.enum :model, ['tesla', :bmw, 'moskvich']
+    Car.enum_int_for('tesla').should == Zlib.crc32('tesla') / 100_000
+    Car.enum_int_for(:tesla).should  == Zlib.crc32('tesla') / 100_000
+
+    # DEPRECATED but still tested
     Car.model_value('tesla').should == Zlib.crc32('tesla') / 100_000
-    Car.model_value(:tesla).should == Zlib.crc32('tesla') / 100_000
+    Car.model_value(:tesla).should  == Zlib.crc32('tesla') / 100_000
   end
 
   describe 'enum value validations' do
